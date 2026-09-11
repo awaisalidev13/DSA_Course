@@ -243,7 +243,10 @@ int main()
         {
             chat.printConversation();
         }
-        // TODO (optional): handle malformed/unknown commands gracefully.
+        else
+        {
+            cout << "Invalid command.\n";
+        }
     }
 
     return 0;
