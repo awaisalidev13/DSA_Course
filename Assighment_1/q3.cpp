@@ -37,7 +37,13 @@ public:
 
     ~GPUScheduler()
     {
-        // TODO: careful cleanup of a CIRCULAR list.
+        for(int i=0 ; i<jobCount ; i++)
+        {
+            Job* temp = current;
+            current = current->next;
+            delete temp;
+            temp = nullptr;
+        }
     }
 
     bool isEmpty()
@@ -123,14 +129,27 @@ public:
     // Returns false if the scheduler is empty (nothing to run).
     bool runNextSlice(int quantum)
     {
-        // TODO: Give the current job one turn on the GPU, then advance to
-        // the next job in the circle. See the Context & Concept /
-        // Problem Statement notes for Q3 in the assignment doc for the
-        // nuances to consider (partial slices, job completion, removing
-        // the last remaining job, etc).
-        // Return true if a job was run this call, false if the scheduler
-        // was empty.
-        return false;
+        if(current == nullptr)
+        {
+           return false;
+        }
+        if((current->remainingTime - quantum) > 0)
+        {
+            current->remainingTime = current->remainingTime - quantum;
+            clock += quantum;
+            cout << "Running Job " << current->jobId << ", remaining time: " << current->remainingTime << endl;
+            current = current->next;
+            return true;
+        }
+        else
+        {
+            current->completionTime = clock + current->remainingTime;
+            clock += current->remainingTime;
+            cout << "Job " << current->jobId << " finished " << endl;
+            removeJob(current->jobId);
+            return true;
+        }
+        
     }
 
     void simulateAll(int quantum)
