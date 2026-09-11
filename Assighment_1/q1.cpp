@@ -40,33 +40,170 @@ public:
 
     int get(int r, int c)
     {
-        // TODO: bounds-checked read. Return -1 (or throw) if out of bounds.
-        return -1;
+        if(inBounds(r,c))
+        {
+            return data[r][c];
+        }
+        else
+        {    
+            return -1;
+        }
     }
 
     void set(int r, int c, int value)
     {
-        // TODO: bounds-checked write.
+        if(inBounds(r,c))
+        {
+            data[r][c] = value;
+        }
+        else
+        {
+            cout << "Invalid index entered!\n";
+        }
     }
 
     void rotate90Clockwise()
     {
-        // TODO: rotate the grid 90 degrees clockwise.
+        int** temp = new int*[cols];
+
+        for(int i=0 ; i<cols ; i++)
+        {
+            temp[i] = new int[rows];
+            for(int j=0 ; j<rows ; j++)
+            {
+                temp[i][j] = 0;
+            }
+        }
+        
+        // Created a temporary Array to store the result of rotated Array.
+
+        for(int i=0 ; i<cols ; i++)
+        {
+            for(int j=0 ; j<rows ; j++)
+            {
+                temp[i][j] = data[rows-j-1][i];
+            }
+        }
+
+        for(int i=0 ; i<rows ; i++)
+        {
+            delete[] data[i];
+        }
+        delete[] data;
+        int tempVar = rows;
+        rows = cols;
+        cols = tempVar;
+        data = temp;
+        temp = nullptr;
     }
 
     void flipHorizontal()
     {
-        // TODO: mirror the image left-right, in place (no extra grid needed).
+        
+        for(int i=0 ; i<rows ; i++)
+        {
+            for(int j=0 ; j<cols/2 ; j++)
+            {
+                int temp = data[i][j];
+                data[i][j] = data[i][cols-j-1];
+                data[i][cols-j-1]  = temp;
+            }
+        }
     }
 
     void histogram(int *outCounts /* size 256, pre-zeroed by caller */)
     {
-        // TODO: count occurrences of each intensity value (0-255) into outCounts.
+        for(int i=0 ; i<rows ; i++)
+        {
+            for(int j=0 ; j<cols ; j++)
+            {
+                outCounts[get(i,j)] += 1;
+            }
+        }
     }
 
     void applyBoxBlur()
     {
-        // TODO: replace each pixel with the integer average of its EXISTING
+        int** temp = new int*[rows];
+        for (int i = 0; i < rows; i++)
+        {
+            temp[i] = new int[cols];
+            for (int j = 0; j < cols; j++)
+                temp[i][j] = 0;
+        }
+
+        // created a temporary Array to store the result of Box Blur.
+
+        for(int i=0 ; i<rows ; i++)
+        {
+            for(int j=0 ; j<cols ; j++)
+            {
+                int count = 1;
+                int sum = data[i][j];
+                
+                // if conditions to check all 8 sides and calculate sum and avg to give to the Box Blured array
+                if(inBounds(i-1,j-1))
+                {
+                    sum += data[i-1][j-1];
+                    count++;
+                }
+
+                if(inBounds(i-1,j))
+                {
+                    sum += data[i-1][j];
+                    count++;
+                }
+
+                if(inBounds(i-1,j+1))
+                {
+                    sum += data[i-1][j+1];
+                    count++;
+                }
+
+                if(inBounds(i,j-1))
+                {
+                    sum += data[i][j-1];
+                    count++;
+                }
+
+                if(inBounds(i,j+1))
+                {
+                    sum += data[i][j+1];
+                    count++;
+                }
+
+                if(inBounds(i+1,j-1))
+                {
+                    sum += data[i+1][j-1];
+                    count++;
+                }
+
+                if(inBounds(i+1,j))
+                {
+                    sum += data[i+1][j];
+                    count++;
+                }
+
+                if(inBounds(i+1,j+1))
+                {
+                    sum += data[i+1][j+1];
+                    count++;
+                }
+
+                int avg = sum/count;
+                temp[i][j] = avg;
+            }
+        }
+
+        for(int i=0 ; i<rows ; i++)
+        {
+            delete[] data[i];
+        }
+
+        delete[] data;
+
+        data = temp;
+        temp = nullptr;
     }
 
     void print()
@@ -129,7 +266,10 @@ int main()
         {
             img.print();
         }
-        // TODO (optional): handle malformed/unknown commands gracefully.
+        else
+        {
+            cout << "Unknown command: " << cmd << endl;
+        }
     }
 
     return 0;
