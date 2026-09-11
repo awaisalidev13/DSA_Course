@@ -47,13 +47,76 @@ public:
 
     void addJob(int jobId, int burstTime)
     {
-        // TODO: create a new Job node and insert it into the circular list
+        Job* newJob = new Job(jobId, burstTime);
+        if(current == nullptr)
+        {
+            current = newJob;
+            current->next = newJob;
+        }
+        else
+        {
+            newJob->next = current->next;
+            current->next = newJob;
+            current = newJob;
+        }
+
+        jobCount++;
     }
 
     void removeJob(int jobId)
     {
-        // TODO: find the node with this jobId anywhere in the circle and
-        // remove it, relinking neighbors so the circle stays intact.
+        //If the list is empty
+        if(current == nullptr)
+        {
+            return;
+        }
+        //If the Job is at the end or tail
+        if(current->jobId == jobId)
+        {
+            Job* temp = current;
+            current = current->next;
+            delete temp;
+            temp = nullptr;
+            jobCount--;
+            return;
+        }
+
+        //If the job is at the head
+        else if(current->next->jobId == jobId)
+        {
+            Job* temp = current->next;
+            current->next = temp->next;
+            delete temp;
+            temp = nullptr;
+            jobCount--;
+            return;
+        }
+
+        //if the Job lies in the middle
+        Job* temp = current->next;
+        bool found = false;
+        for(int i=0 ; i<jobCount-2 ; i++)
+        {
+            if(temp->next->jobId == jobId)
+            {
+                found = true;
+                break;
+            }
+            temp = temp->next;
+        }
+
+        if(!found)
+        {
+            return;
+        }
+
+        Job* temp2 = temp->next;
+
+        temp->next = temp->next->next;
+        delete temp2;
+        jobCount--;
+        temp2= nullptr;
+        
     }
 
     // Runs one time slice for the current job. Prints what happened.
