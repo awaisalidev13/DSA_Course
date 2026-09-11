@@ -13,7 +13,25 @@ private:
 
     void resize(int newCap)
     {
-        // TODO: allocate a new float* array of size newCap, copy existing
+        if(newCap <= cap)
+            return;
+        float** temp = new float*[newCap];
+
+        for(int i=0 ; i<count ; i++)
+        {
+            temp[i] = new float[dim];
+            for(int j=0 ; j<dim ; j++)
+            {
+                temp[i][j] = items[i][j];
+            }
+        }
+        for(int i=0 ; i<count ; i++)
+        {
+            delete[] items[i];
+        }
+        delete[] items;
+        items = temp;
+        cap = newCap;
     }
 
 public:
@@ -37,32 +55,78 @@ public:
 
     void addEmbedding(float *vec)
     {
-        // TODO: if count == cap, double capacity.
+        if(count == cap)
+        {
+            resize(cap * 2);
+        }
+        items[count] = new float[dim];
+        for(int i=0 ; i<dim ; i++)
+        {
+            items[count][i] = vec[i];
+        }
+        count++;
     }
 
     void removeEmbedding(int index)
     {
-        // TODO: bounds-check. delete[] the vector at index, then shift all pointers.
+        if(index >= count || index < 0)
+        {
+            return;
+        }
+
+    
+        for(int i=index ; i<count-1 ; i++)
+        {   
+            for(int j=0 ; j<dim ; j++)
+            {
+                items[i][j] = items[i+1][j];
+            }
+        }
+        delete[] items[count-1];
+        count--;
     }
 
     float *getEmbedding(int index)
     {
-        // TODO: bounds-checked access, return pointer (or nullptr if invalid).
-        return nullptr;
+        if(index >= count || index < 0)
+        {
+            return nullptr;
+        }
+        
+        return items[index];
     }
 
     float distance(float *a, float *b)
     {
-        // TODO: Euclidean distance between two length-dim vectors.
-        return 0.0f;
+        float sum = 0;
+        for(int i=0 ; i<dim ; i++)
+        {
+            sum += pow(b[i]-a[i],2);
+        }
+        
+        return sqrt(sum);
     }
 
     int nearestNeighbor(float *query, float &outDistance)
     {
-        // TODO: linear scan over all stored embeddings, find index with
-        // minimum distance() to query. Set outDistance to that distance.
-        // Return -1 if store is empty.
-        return -1;
+        if(count == 0)
+        {
+            return -1;
+        }
+        
+        int bestIndex = 0;
+        float min = distance(query,items[0]);
+        for(int i=1 ; i<count ; i++)
+        {
+            if(distance(query,items[i]) < min)
+            {
+                min = distance(query, items[i]);
+                bestIndex = i;
+            }
+        }
+
+        outDistance = min;
+        return bestIndex;
     }
 
     void printState()
@@ -121,7 +185,10 @@ int main()
         {
             store.printState();
         }
-        // TODO (optional): handle malformed/unknown commands gracefully.
+        else
+        {
+            cout << "Unknown Command : " << cmd << endl;
+        }
     }
 
     return 0;
