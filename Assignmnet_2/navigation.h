@@ -201,4 +201,9 @@ class Navigation{
             printStack(backStack, "Back stack (top first):");
             printStack(forwardStack, "Forward stack (top first):");
         }
+
+        TreeNode* getCurrent()
+        {
+            return current;
+        }
 };
