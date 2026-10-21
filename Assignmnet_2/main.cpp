@@ -1,54 +1,33 @@
 #include <iostream>
+#include "Stack.h"
+#include "Queue.h"
+#include "Tree.h"
+#include "Job.h"
 #include "BST.h"
+#include "Navigation.h"
+#include "PrintCenter.h"
+#include "FolderOps.h"
 using namespace std;
 
 int main()
 {
-    BST tree;
+    TreeNode* root = buildSampleTree();
+    Navigation nav(root);
+    PrintCenter pc(root);
 
-    // insertion order: 105, 102, 108, 101, 103, 107, 110
-    tree.insert(Record(105, 1, 5, 50));
-    tree.insert(Record(102, 1, 2, 20));
-    tree.insert(Record(108, 1, 8, 80));
-    tree.insert(Record(101, 1, 1, 10));
-    tree.insert(Record(103, 1, 3, 30));
-    tree.insert(Record(107, 1, 7, 70));
-    tree.insert(Record(110, 1, 10, 100));
-
-    cout << "In order: "; tree.inOrderPrint(); cout << endl;
-
-    cout << "\n-- FIND_JOB --" << endl;
-    tree.findJob(103);
-    tree.findJob(999);
-
-    cout << "\n-- RANGE 102 108 --" << endl;
-    tree.range(102, 108);
-    cout << "\n-- RANGE 200 300 (empty) --" << endl;
-    tree.range(200, 300);
-    cout << "\n-- RANGE 108 102 (invalid) --" << endl;
-    tree.range(108, 102);
-
-    cout << "\n-- KTH --" << endl;
-    tree.kth(1);
-    tree.kth(4);
-    tree.kth(7);
-    tree.kth(8);
-    tree.kth(0);
-
-    cout << "\n-- DELETE --" << endl;
-    tree.deleteRecord(101);   // leaf
-    cout << "In order: "; tree.inOrderPrint(); cout << endl;
-    tree.deleteRecord(108);   // two children
-    cout << "In order: "; tree.inOrderPrint(); cout << endl;
-    tree.deleteRecord(105);   // root, two children
-    cout << "In order: "; tree.inOrderPrint(); cout << endl;
-    tree.deleteRecord(102);   // one child
-    cout << "In order: "; tree.inOrderPrint(); cout << endl;
-    tree.deleteRecord(999);   // not stored
-
-    cout << "\n-- Records still correct after deletes --" << endl;
-    tree.findJob(107);
-    tree.findJob(110);
+    cout << ">> OPEN /CS/DSA" << endl;         nav.open("/CS/DSA");
+    cout << ">> PRINT_FOLDER 1 DEPTH" << endl; pc.printFolder(nav.getCurrent(), 1, "DEPTH");
+    cout << ">> RUN 3" << endl;                pc.run(3);
+    cout << ">> BACK 1" << endl;               nav.back(1);
+    cout << ">> OPEN /Admin" << endl;          nav.open("/Admin");
+    cout << ">> PRINT_FOLDER 1 LEVEL" << endl; pc.printFolder(nav.getCurrent(), 1, "LEVEL");
+    cout << ">> CANCEL 102" << endl;           pc.cancel(102);
+    cout << ">> RUN 10" << endl;               pc.run(10);
+    cout << ">> WHERE" << endl;                nav.where();
+    cout << ">> SHOW_QUEUE" << endl;           pc.showQueue();
+    cout << ">> FIND_JOB 102" << endl;         pc.findJob(102);
+    cout << ">> RANGE 101 104" << endl;        pc.range(101, 104);
+    cout << ">> KTH 2" << endl;                pc.kth(2);
 
     return 0;
 }
